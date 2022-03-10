@@ -174,7 +174,56 @@ OrderedLinkedList.prototype.print = function(){
 // < 'head --> 5 --> 3 --> 1 --> null'
 //               4
 OrderedLinkedList.prototype.add = function(val){
-    
+    var current = this.head;
+    var ant = null;
+    var node = new Node(val);
+
+    if(!current){
+        this.head = node
+        return;
+    }
+
+    while( current){
+        if(val <= current.value ){
+            ant = current;
+            current = current.next;
+        }
+        else{
+            if( ant ){
+                node.next = current;
+                ant.next = node;
+                return;
+            }
+            node.next = current; //current == this.head
+            current = node; //current == this.head
+            return;
+        }
+    }
+    ant.next = node;
+    /*var current = this.head;
+    if(!current){
+        this.head = new Node(val);
+        return;
+    }
+    if(!current.next && val <= current.value){
+        current.next = new Node(val);
+        return;
+    }
+    if(current.next && val <= current.next.value){
+        let ant2 = current.next;
+        current.next = new Node(val);
+        current.next.next = ant2;
+        return;
+    }
+
+    while(current.next.next){ //esto no anda bien cuando tengo mas de 3 valores
+        current = current.next;
+    }
+    if(val <= current.value)
+    var ant = current.next;
+    current.next = new Node(val);
+    current.next.next = ant;*/
+
 }
 
 
@@ -194,7 +243,32 @@ OrderedLinkedList.prototype.add = function(val){
 // < null
 
 OrderedLinkedList.prototype.removeHigher = function(){
-    
+    var current = this.head;
+    var remove = null;
+    var max = 0;
+    var rem = 0;
+    if(!current) return null;
+
+    while(current){
+        if(current.value > max){
+            max = current.value;
+            remove = current;
+        }
+        current = current.next;
+    }
+    current = this.head;
+    if(this.head == remove){
+        rem = remove.value;
+        this.head = remove.next;
+        return rem;
+    }
+    while( current.next != remove && current ) current = current.next;
+    if(current){
+        current.next = current.next.next;
+        rem = remove.value;
+        remove = null;
+        return rem;
+    }
 }
 
 
@@ -214,7 +288,32 @@ OrderedLinkedList.prototype.removeHigher = function(){
 // < null
 
 OrderedLinkedList.prototype.removeLower = function(){
-    
+    var current = this.head;
+    var remove = null;
+    var min = 1000;
+    var rem = 0;
+    if(!current) return null;
+    while(current){
+        if(current.value < min){
+            min = current.value;
+            remove = current;
+        }
+        current = current.next;
+    }
+    current = this.head;
+    if(this.head == remove){
+        rem = remove.value;
+        this.head = remove.next;
+        return rem;
+    }
+    while( current.next != remove && current ) current = current.next;
+
+    if(current){
+        current.next = null;
+        rem = remove.value;
+        remove = null;
+        return rem;
+    }
 }
 
 
@@ -247,7 +346,25 @@ OrderedLinkedList.prototype.removeLower = function(){
 // < ["2-1", "1-1", "1-2", "2-2"];
 
 function multiCallbacks(cbs1, cbs2){
-    
+    let aux = 0;
+    let arr = [];
+    for(let i=0 ; i<cbs2.length ; i++){
+        cbs1.push(cbs2[i]);
+    }
+
+    for(let i=0 ; i<cbs1.length-1 ; i++){
+        for(let j=0 ; j<cbs1.length-1-i ; j++){
+            if( cbs1[j].time > cbs1[j+1].time){
+                aux = cbs1[j];
+                cbs1[j] = cbs1[j+1];
+                cbs1[j+1] = aux
+            }
+        }
+    }
+    for(let i=0 ; i<cbs1.length ; i++){
+        arr.push(cbs1[i].cb());
+    }
+    return arr;
 }
 
 
@@ -265,8 +382,15 @@ function multiCallbacks(cbs1, cbs2){
 // 5   9
 // resultado:[5,8,9,32,64]
 
-BinarySearchTree.prototype.toArray = function() {
-    
+BinarySearchTree.prototype.toArray = function(arr = []) {
+    arr.push(this.value);
+    this.left && this.left.toArray(arr);
+    this.right && this.right.toArray(arr);
+
+    return arr.sort(function(a,b){return a-b});
+    /*var testArr= [];
+    testArr.push(this.depthFirstForEach(function(val){ testArr.push(val); }));
+    return testArr.sort(function(a,b){return a-b});;*/
 }
 
 
@@ -284,8 +408,20 @@ BinarySearchTree.prototype.toArray = function() {
 // Si bien esta no es la mejor implementacion existente, con que uds puedan 
 // informarse sobre algoritmos, leerlos de un pseudocodigo e implemnterlos alcanzara
 
-function primalityTest(n) {
+function primalityTest(num) {
+    if (num <= 3) return num > 1;
+  
+  if ((num % 2 === 0) || (num % 3 === 0)) return false;
+  
+  let count = 5;
+  
+  while (Math.pow(count, 2) <= num) {
+    if (num % count === 0 || num % (count + 2) === 0) return false;
     
+    count += 6;
+  }
+  
+  return true;
 }
 
 
@@ -295,7 +431,20 @@ function primalityTest(n) {
 // https://en.wikipedia.org/wiki/Quicksort
 
 function quickSort(array) {
+    if (array.length <= 1) {
+        return array;
+      }
     
+      var pivot = array[0];
+      
+      var left = []; 
+      var right = [];
+    
+      for (var i = 1; i < array.length; i++) {
+        array[i] > pivot ? left.push(array[i]) : right.push(array[i]);
+      }
+    
+      return quickSort(left).concat(pivot, quickSort(right));
 }
 // QuickSort ya lo conocen solo que este 
 // ordena de mayor a menor
@@ -317,8 +466,14 @@ function quickSort(array) {
 // > reverse(95823);
 // < 32859
 
-function reverse(num){
-    
+function reverse(numero){
+    var invertido = 0
+    var resto = numero
+    do {
+      invertido = invertido * 10 + (resto % 10)
+      resto = Math.floor(resto / 10)
+    } while ( resto > 0 )
+    return invertido
 }
 // la grandiosa resolucion de Wilson!!!
 // declaran una variable donde 
