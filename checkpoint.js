@@ -33,9 +33,12 @@ const {
 // < 16
 
 function exponencial(exp) {
-
+    return function(x){
+        return  Math.pow(x,exp);
+    }
 }
-
+//var sqrt = exponencial(2);
+//console.log(sqrt(3));
 // ----- Recursión -----
 
 // EJERCICIO 2
@@ -70,7 +73,17 @@ function exponencial(exp) {
 // Aclaraciones: el segundo parametro que recibe la funcion ('direccion') puede ser pasado vacio (null)
 
 function direcciones(laberinto) {
-
+    var dir = '';
+    for(var prop in laberinto){
+        if(typeof laberinto[prop] == 'object'){
+            dir += prop.toString();
+            dir += direcciones(laberinto[prop])
+        }
+        else if(laberinto[prop] == 'destino'){
+            dir += prop.toString();
+        }
+    } 
+    return dir;
 }
 
 
@@ -88,7 +101,29 @@ function direcciones(laberinto) {
 // deepEqualArrays([0,1,[[0,1,2],1,2]], [0,1,[[0,1,2],1,2]]) => true
 
 function deepEqualArrays(arr1, arr2) {
+    var state = true;
 
+    if(arr1.length != arr2.length) {
+        state = false;
+        return state;
+    }
+
+    for(let i=0 ; i<arr1.length ; i++){
+        if(Array.isArray(arr1[i]) && Array.isArray(arr2[i])){
+            state = deepEqualArrays(arr1[i],arr2[i]);
+            if(state === false) return false;
+        }
+        else if(arr1[i] != arr2[i]) {
+            state = false;
+            return state;
+        }
+        else if(typeof arr1[i] !== typeof arr2[i]){
+            state = false;
+            return state;
+        } 
+    }
+    state = true;
+    return state;
 }
 
 
